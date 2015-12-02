@@ -1,0 +1,16 @@
+<ion-view view-title="Client">
+  <ion-content>
+
+    <div class="list">
+
+    <a class="item item-icon-left" ng-repeat="client in clients" href="#/tab/client-detail/{{ client.name }}">
+      <i class="icon ion-ios-cloud-upload-outline positive"></i>
+      {{ client.address }} - {{ client.name }}
+      <br>
+      <small> last check {{ client.diff }} seconds ago </small>
+    </a>
+
+  </div>
+
+  </ion-content>
+</ion-view>

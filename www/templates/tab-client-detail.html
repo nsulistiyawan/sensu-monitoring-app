@@ -1,0 +1,35 @@
+<!--
+  This template loads for the 'tab.friend-detail' state (app.js)
+  'friend' is a $scope variable created in the FriendsCtrl controller (controllers.js)
+  The FriendsCtrl pulls data from the Friends service (service.js)
+  The Friends service returns an array of friend data
+-->
+<ion-view view-title="Client Detail">
+  <ion-content class="padding">
+
+    <div class="card">
+      <div class="item item-divider">
+        Host Information
+      </div>
+      <div class="item item-text-wrap item-icon-left">
+        <i class="icon ion-ios-cloud-upload-outline positive"></i> {{ client.address }} - {{ client.name }}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="item item-divider">
+        Checks Information
+      </div>
+      <div class="item item-text-wrap item-icon-left" ng-repeat="check in checks">
+        <i ng-if="check.last_status == 0" class="icon ion-ios-checkmark-outline positive"></i>
+        <i ng-if="check.last_status != 0" class="icon ion-ios-close-outline assertive"></i>
+        {{ check.check }}
+        <br> <small> {{ check.diff }} seconds ago </small>
+        <br> <small> {{ check.last_result.output }} </small>
+      </div>
+    </div>
+
+
+
+  </ion-content>
+</ion-view>

@@ -1,0 +1,41 @@
+<ion-view view-title="Dashboard">
+  <ion-content class="padding">
+    <div class="list card">
+      <div class="item item-divider">Sensu Server Info</div>
+      <div class="item item-body">
+        <div class="row">
+          <div class="col col-33">Version  </div>
+          <div class="col"> : {{ sensu.sensu.version }} </div>
+        </div>
+        <div class="row">
+          <div class="col col-33">Transport : </div>
+          <div class="col" ng-if="sensu.transport.connected == true"> : Health </div>
+          <div class="col" ng-if="sensu.transport.connected != true"> : Warning </div>
+
+        </div>
+        <div class="row">
+          <div class="col col-33">Redis : </div>
+          <div class="col" ng-if="sensu.redis.connected == true"> : Health </div>
+          <div class="col" ng-if="sensu.redis.connected != true"> : Warning </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="item item-divider">
+        Events
+      </div>
+      <div class="item item-text-wrap item-icon-left" ng-if="events.length >= 0" ng-repeat="event in events">
+        <i class="icon ion-ios-close-outline"></i>
+        {{ event.client.name }} {{ event.check.name }}
+        <br>
+        <small> {{ event.check.output }} </small>
+      </div>
+      <div ng-if="events.length == 0" class="item item-text-wrap">
+        There are no events available
+      </div>
+    </div>
+
+
+  </ion-content>
+</ion-view>

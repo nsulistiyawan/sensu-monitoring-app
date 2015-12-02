@@ -1,0 +1,12 @@
+{
+  "plugins": {
+    "complete_strings": {},
+    "node": {},
+    "angular": {},
+    "requirejs": {},
+    "modules": {},
+    "doc_comment": {
+      "fullDocs": true
+    }
+  }
+}
