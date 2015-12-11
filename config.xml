@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.ionicframework.unsmonapp554029" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>unsmonapp</name>
+<widget id="com.neno.sensu-monitoring-app" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Sensu Monitoring App</name>
   <description>
-        An Ionic Framework and Cordova project.
+        Ionic based mobile app for sensu monitoring
     </description>
-  <author email="hi@ionicframework" href="http://ionicframework.com/">
-      Ionic Framework Team
+  <author email="aburamesino@gmail.com" href="http:://nsulistiyawan.github.io">
+      Neno Sulistiyawan
     </author>
   <content src="index.html"/>
   <access origin="*"/>
