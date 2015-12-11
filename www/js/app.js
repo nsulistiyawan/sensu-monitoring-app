@@ -6,14 +6,14 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 
-angular.module('unsmonapp.controllers', []);
-angular.module('unsmonapp.services', []);
-angular.module('unsmonapp', [
+angular.module('sensumobileapp.controllers', []);
+angular.module('sensumobileapp.services', []);
+angular.module('sensumobileapp', [
     'ionic',
-    'unsmonapp.controllers',
-    'unsmonapp.services'
+    'sensumobileapp.controllers',
+    'sensumobileapp.services'
   ])
-  .constant('BASE_URL_SENSU_API', "https://your.sensu.server.com/api")
+  .constant('BASE_URL_SENSU_API', "YOUR_SENSU_URL_BASE_API")
   .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -21,21 +21,20 @@ angular.module('unsmonapp', [
       if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
         cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
         cordova.plugins.Keyboard.disableScroll(true);
-
       }
       if (window.StatusBar) {
         // org.apache.cordova.statusbar required
         StatusBar.styleDefault();
       }
       var notificationOpenedCallback = function(jsonData) {
-        alert("Notification received:\n" + JSON.stringify(jsonData));
         console.log('didReceiveRemoteNotificationCallBack: ' + JSON.stringify(jsonData));
       };
       // Update with your OneSignal AppId and googleProjectNumber before running.
-      window.plugins.OneSignal.init("your-one-signal-app-id", {
-          googleProjectNumber: "your-google-project-number"
+      window.plugins.OneSignal.init("ONE_SIGNAL_APP_ID", {
+          googleProjectNumber: "GOOGLE_PROJECT_NUMBER"
         },
         notificationOpenedCallback);
+      window.plugins.OneSignal.enableInAppAlertNotification(true);
     });
   })
 
@@ -82,6 +81,16 @@ angular.module('unsmonapp', [
       'tab-client': {
         templateUrl: 'templates/tab-client-detail.html',
         controller: 'ClientDetailCtrl'
+      }
+    }
+  })
+
+  .state('tab.silence', {
+    'url' : '/silence',
+    views: {
+      'tab-silence': {
+        templateUrl : 'templates/tab-silence.html',
+        controller : 'SilenceCtrl'
       }
     }
   })

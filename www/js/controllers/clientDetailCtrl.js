@@ -1,4 +1,4 @@
-angular.module('unsmonapp.controllers').controller('ClientDetailCtrl', [
+angular.module('sensumobileapp.controllers').controller('ClientDetailCtrl', [
   '$scope','SensuService','$stateParams','$q','$ionicLoading',
   function ($scope, SensuService, $stateParams, $q, $ionicLoading) {
     $scope.client = null;
@@ -19,4 +19,20 @@ angular.module('unsmonapp.controllers').controller('ClientDetailCtrl', [
     }, function (error) {
       console.log(error);
     });
+
+    $scope.refreshClientDetailData = function () {
+      $q.all([SensuService.getClient($stateParams.name),  SensuService.getClientHistory($stateParams.name)]).then(function (success) {
+        $scope.client = success[0].data;
+        var now = moment();
+        angular.forEach(success[1].data, function (check) {
+          check.diff = now.diff(moment.unix(check.last_execution),'seconds');
+          $scope.checks.push(check);
+          console.log(check);
+        });
+        $scope.client.diff = now.diff(moment.unix(($scope.client.timestamp)),'seconds');
+        $scope.$broadcast('scroll.refreshComplete');
+      }, function (error) {
+        console.log(error);
+      });
+    };
 }]);

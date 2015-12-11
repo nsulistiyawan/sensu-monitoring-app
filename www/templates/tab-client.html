@@ -1,10 +1,10 @@
 <ion-view view-title="Client">
   <ion-content>
-
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshClientData()"></ion-refresher>
     <div class="list">
-
     <a class="item item-icon-left" ng-repeat="client in clients" href="#/tab/client-detail/{{ client.name }}">
-      <i class="icon ion-ios-cloud-upload-outline positive"></i>
+      <i ng-if="client.warning == false" class="icon ion-ios-cloud-upload-outline positive"></i>
+      <i ng-if="client.warning == true" class="icon ion-ios-close-outline assertive"></i>
       {{ client.address }} - {{ client.name }}
       <br>
       <small> last check {{ client.diff }} seconds ago </small>

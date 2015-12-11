@@ -1,6 +1,8 @@
 <ion-view view-title="Dashboard">
   <ion-content class="padding">
-    <div class="list card">
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshOverviewData()">
+    </ion-refresher>
+    <div class="list card" ng-if="sensu != null">
       <div class="item item-divider">Sensu Server Info</div>
       <div class="item item-body">
         <div class="row">
@@ -26,8 +28,9 @@
         Events
       </div>
       <div class="item item-text-wrap item-icon-left" ng-if="events.length >= 0" ng-repeat="event in events">
-        <i class="icon ion-ios-close-outline"></i>
-        {{ event.client.name }} {{ event.check.name }}
+        <i class="icon ion-ios-close-outline assertive"></i>
+
+        {{ event.client.address }} {{ event.client.name }} {{ event.check.name }}
         <br>
         <small> {{ event.check.output }} </small>
       </div>

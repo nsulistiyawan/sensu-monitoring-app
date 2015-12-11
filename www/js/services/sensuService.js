@@ -1,4 +1,4 @@
-angular.module('unsmonapp.services').factory('SensuService', ['$http','BASE_URL_SENSU_API',function ($http, BASE_URL_SENSU_API) {
+angular.module('sensumobileapp.services').factory('SensuService', ['$http','BASE_URL_SENSU_API',function ($http, BASE_URL_SENSU_API) {
 
   var getAllClients = function() {
       return $http({
@@ -20,7 +20,6 @@ angular.module('unsmonapp.services').factory('SensuService', ['$http','BASE_URL_
         url: BASE_URL_SENSU_API+"/clients/"+name+"/history"
       });
     };
-
 
 
     var getAllChecks = function() {
@@ -59,6 +58,35 @@ angular.module('unsmonapp.services').factory('SensuService', ['$http','BASE_URL_
       });
     };
 
+    var getAllStash = function () {
+      return $http({
+        method : 'GET',
+        url : BASE_URL_SENSU_API+"/stashes"
+      });
+    };
+
+    var getStash = function (path) {
+      return $http({
+        method : 'GET',
+        url : BASE_URL_SENSU_API+"/stashes/"+path
+      });
+    };
+
+    var postStash = function (path, data) {
+      return $http({
+        method : 'POST',
+        url : BASE_URL_SENSU_API+"/stashes/"+path,
+        data : data
+      });
+    };
+
+    var deleteStash = function (path) {
+      return $http({
+        method : 'DELETE',
+        url : BASE_URL_SENSU_API+"/stashes/"+path,
+      });
+    };
+
     var getSensuServerInfo = function () {
       return $http({
         method : 'GET',
@@ -74,7 +102,11 @@ angular.module('unsmonapp.services').factory('SensuService', ['$http','BASE_URL_
       getCheck : getCheck,
       getAllResults : getAllResults,
       getResult : getResult,
+      getStash : getStash,
+      postStash : postStash,
+      getAllStash : getAllStash,
       getAllEvents : getAllEvents,
+      deleteStash : deleteStash,
       getSensuServerInfo : getSensuServerInfo
     };
 

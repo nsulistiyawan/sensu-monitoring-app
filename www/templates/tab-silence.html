@@ -1,0 +1,22 @@
+<ion-view view-title="Silence">
+  <ion-content>
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="refreshSilenceData()"></ion-refresher>
+    <div class="list" ng-if="silents.length > 0">
+      <ion-list show-delete="true">
+        <ion-item ng-repeat="silent in silents">
+          <ion-delete-button class="ion-minus-circled" ng-click="deleteSilence(silent.path)"></ion-delete-button>
+          {{silent.path}}
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <div ng-if="silents.length == 0">
+      <div class="card">
+        <div class="item item-text-wrap">
+          There's no silenced services
+        </div>
+      </div>
+    </div>
+
+  </ion-content>
+</ion-view>

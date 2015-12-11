@@ -6,14 +6,14 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 
-angular.module('unsmonapp.controllers', []);
-angular.module('unsmonapp.services', []);
-angular.module('unsmonapp', [
+angular.module('sensumobileapp.controllers', []);
+angular.module('sensumobileapp.services', []);
+angular.module('sensumobileapp', [
     'ionic',
-    'unsmonapp.controllers',
-    'unsmonapp.services'
+    'sensumobileapp.controllers',
+    'sensumobileapp.services'
   ])
-  .constant('BASE_URL_SENSU_API', "https://your.sensu.server.com/api")
+  .constant('BASE_URL_SENSU_API', "YOUR_SENSU_URL_BASE_API")
   .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -21,21 +21,20 @@ angular.module('unsmonapp', [
       if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
         cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
         cordova.plugins.Keyboard.disableScroll(true);
-
       }
       if (window.StatusBar) {
         // org.apache.cordova.statusbar required
         StatusBar.styleDefault();
       }
       var notificationOpenedCallback = function(jsonData) {
-        alert("Notification received:\n" + JSON.stringify(jsonData));
         console.log('didReceiveRemoteNotificationCallBack: ' + JSON.stringify(jsonData));
       };
       // Update with your OneSignal AppId and googleProjectNumber before running.
-      window.plugins.OneSignal.init("your-one-signal-app-id", {
-          googleProjectNumber: "your-google-project-number"
+      window.plugins.OneSignal.init("ONE_SIGNAL_APP_ID", {
+          googleProjectNumber: "GOOGLE_PROJECT_NUMBER"
         },
         notificationOpenedCallback);
+      window.plugins.OneSignal.enableInAppAlertNotification(true);
     });
   })
 
@@ -86,6 +85,16 @@ angular.module('unsmonapp', [
     }
   })
 
+  .state('tab.silence', {
+    'url' : '/silence',
+    views: {
+      'tab-silence': {
+        templateUrl : 'templates/tab-silence.html',
+        controller : 'SilenceCtrl'
+      }
+    }
+  })
+
   .state('tab.about', {
     url: '/about',
     views: {
@@ -101,26 +110,59 @@ angular.module('unsmonapp', [
 
 });
 
-angular.module('unsmonapp.controllers').controller('ClientCtrl', [
-  '$scope','SensuService','$ionicLoading',function ($scope, SensuService,$ionicLoading) {
+angular.module('sensumobileapp.controllers').controller('ClientCtrl', [
+  '$scope','SensuService','$ionicLoading','$q',function ($scope, SensuService,$ionicLoading, $q) {
     $scope.clients = [];
     $ionicLoading.show({
       template: 'Loading...'
     });
-    SensuService.getAllClients().then(function (success) {
-      angular.forEach(success.data, function (client) {
+
+    $q.all([SensuService.getAllClients(), SensuService.getAllEvents()]).then(function (success) {
+      console.log(success[1].data);
+      angular.forEach(success[0].data, function (client) {
         var now = moment();
+        client.warning = false;
         client.diff = now.diff(moment.unix(client.timestamp),'seconds');
+        angular.forEach(success[1].data, function (event) {
+          if(client.address == event.client.address){
+            client.warning = true;
+          }
+        });
         $scope.clients.push(client);
       });
       $ionicLoading.hide();
+
     }, function (error) {
-      console.log(error);
+      console.log('error');
     });
+
+
+    $scope.refreshClientData = function () {
+      $q.all([SensuService.getAllClients(), SensuService.getAllEvents()]).then(function (success) {
+        console.log(success[1].data);
+        angular.forEach(success[0].data, function (client) {
+          var now = moment();
+          client.warning = false;
+          client.diff = now.diff(moment.unix(client.timestamp),'seconds');
+          angular.forEach(success[1].data, function (event) {
+            if(client.address == event.client.address){
+              client.warning = true;
+            }
+          });
+          $scope.clients.push(client);
+        });
+        $scope.$broadcast('scroll.refreshComplete');
+
+      }, function (error) {
+        console.log('error');
+      });
+
+
+    };
 
 }]);
 
-angular.module('unsmonapp.controllers').controller('ClientDetailCtrl', [
+angular.module('sensumobileapp.controllers').controller('ClientDetailCtrl', [
   '$scope','SensuService','$stateParams','$q','$ionicLoading',
   function ($scope, SensuService, $stateParams, $q, $ionicLoading) {
     $scope.client = null;
@@ -141,33 +183,99 @@ angular.module('unsmonapp.controllers').controller('ClientDetailCtrl', [
     }, function (error) {
       console.log(error);
     });
+
+    $scope.refreshClientDetailData = function () {
+      $q.all([SensuService.getClient($stateParams.name),  SensuService.getClientHistory($stateParams.name)]).then(function (success) {
+        $scope.client = success[0].data;
+        var now = moment();
+        angular.forEach(success[1].data, function (check) {
+          check.diff = now.diff(moment.unix(check.last_execution),'seconds');
+          $scope.checks.push(check);
+          console.log(check);
+        });
+        $scope.client.diff = now.diff(moment.unix(($scope.client.timestamp)),'seconds');
+        $scope.$broadcast('scroll.refreshComplete');
+      }, function (error) {
+        console.log(error);
+      });
+    };
 }]);
 
-angular.module('unsmonapp.controllers').controller('OverviewCtrl', ['$scope', 'SensuService', '$q', '$ionicLoading',
+angular.module('sensumobileapp.controllers').controller('OverviewCtrl', ['$scope', 'SensuService', '$q', '$ionicLoading',
   function($scope, SensuService, $q, $ionicLoading) {
     $scope.events = [];
     $scope.sensu = null;
     $ionicLoading.show({
       template: 'Loading...'
     });
-    $q.all([SensuService.getAllEvents(), SensuService.getAllResults(), SensuService.getSensuServerInfo()]).then(function(success) {
+    $q.all([SensuService.getAllEvents(), SensuService.getAllResults(), SensuService.getSensuServerInfo(), SensuService.getAllStash()]).then(function(success) {
       $scope.events = success[0].data;
       console.log($scope.events);
       $scope.sensu = success[2].data;
+      console.log(success[3].data);
       $ionicLoading.hide();
     }, function(error) {
       console.log(error);
     });
 
+    $scope.refreshOverviewData = function () {
+      $q.all([SensuService.getAllEvents(), SensuService.getAllResults(), SensuService.getSensuServerInfo()]).then(function(success) {
+        $scope.events = success[0].data;
+        $scope.sensu = success[2].data;
+        $scope.$broadcast('scroll.refreshComplete');
+      }, function(error) {
+        console.log(error);
+      });
+    };
+
   }
 ]);
 
-angular.module('unsmonapp.controllers')
+angular.module('sensumobileapp.controllers')
 .controller('SettingCtrl', ['$scope',function ($scope) {
 
 }]);
 
-angular.module('unsmonapp.services').factory('SensuService', ['$http','BASE_URL_SENSU_API',function ($http, BASE_URL_SENSU_API) {
+angular.module('sensumobileapp.controllers')
+.controller('SilenceCtrl', ['$scope','SensuService', '$q', '$ionicLoading',
+function ($scope, SensuService, $q, $ionicLoading) {
+  $scope.silents = [];
+
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
+
+  SensuService.getAllStash().then(function (success) {
+    $scope.silents = success.data;
+    $ionicLoading.hide();
+  }, function (error) {
+    console.log(error);
+  });
+
+  $scope.deleteSilence = function (silence) {
+    SensuService.deleteStash(silence).then(function (success) {
+      console.log(success);
+      $scope.silents.splice($scope.silents.indexOf(silence), 1);
+    }, function (error) {
+      console.log(error);
+    });
+  };
+
+  $scope.refreshSilenceData = function () {
+    SensuService.getAllStash().then(function (success) {
+      $scope.silents = success.data;
+      $scope.$broadcast('scroll.refreshComplete');
+    }, function (error) {
+      console.log(error);
+    });
+
+
+  };
+
+
+}]);
+
+angular.module('sensumobileapp.services').factory('SensuService', ['$http','BASE_URL_SENSU_API',function ($http, BASE_URL_SENSU_API) {
 
   var getAllClients = function() {
       return $http({
@@ -189,7 +297,6 @@ angular.module('unsmonapp.services').factory('SensuService', ['$http','BASE_URL_
         url: BASE_URL_SENSU_API+"/clients/"+name+"/history"
       });
     };
-
 
 
     var getAllChecks = function() {
@@ -228,6 +335,35 @@ angular.module('unsmonapp.services').factory('SensuService', ['$http','BASE_URL_
       });
     };
 
+    var getAllStash = function () {
+      return $http({
+        method : 'GET',
+        url : BASE_URL_SENSU_API+"/stashes"
+      });
+    };
+
+    var getStash = function (path) {
+      return $http({
+        method : 'GET',
+        url : BASE_URL_SENSU_API+"/stashes/"+path
+      });
+    };
+
+    var postStash = function (path, data) {
+      return $http({
+        method : 'POST',
+        url : BASE_URL_SENSU_API+"/stashes/"+path,
+        data : data
+      });
+    };
+
+    var deleteStash = function (path) {
+      return $http({
+        method : 'DELETE',
+        url : BASE_URL_SENSU_API+"/stashes/"+path,
+      });
+    };
+
     var getSensuServerInfo = function () {
       return $http({
         method : 'GET',
@@ -243,7 +379,11 @@ angular.module('unsmonapp.services').factory('SensuService', ['$http','BASE_URL_
       getCheck : getCheck,
       getAllResults : getAllResults,
       getResult : getResult,
+      getStash : getStash,
+      postStash : postStash,
+      getAllStash : getAllStash,
       getAllEvents : getAllEvents,
+      deleteStash : deleteStash,
       getSensuServerInfo : getSensuServerInfo
     };
 
