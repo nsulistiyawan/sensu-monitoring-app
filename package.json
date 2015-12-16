@@ -1,7 +1,7 @@
 {
-  "name": "unsmonapp",
-  "version": "1.1.1",
-  "description": "unsmonapp: An Ionic project",
+  "name": "sensu-monitoring-app",
+  "version": "0.2",
+  "description": "Sensu Monitoring App",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-sass": "^2.0.4",
