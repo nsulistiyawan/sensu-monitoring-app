@@ -1,7 +1,8 @@
 {
   "name": "sensu-monitoring-app",
-  "version": "0.2",
+  "version": "0.2.0",
   "description": "Sensu Monitoring App",
+  "repository": "https://github.com/nsulistiyawan/sensu-monitoring-app",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-sass": "^2.0.4",
